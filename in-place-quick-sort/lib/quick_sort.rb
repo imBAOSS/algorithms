@@ -13,17 +13,21 @@ class QuickSort
 
   # In-place.
   def self.sort2!(array, start = 0, length = array.length, &prc)
+    return array if length <= 1
+    pivot = QuickSort.partition(array, start, length)
+    QuickSort.sort2!(array, start, array[0...pivot].length)
+    QuickSort.sort2!(array, pivot + 1, array[pivot + 1..-1].length)
   end
 
   def self.partition(array, start, length, &prc)
     prc ||= Proc.new { |a, b| a <=> b }
     pivot = array[start]
-    barrier_idx = start
-    i = start
+    barrier_idx = start + 1
+    i = start + 1
 
     while i < start + length
       if prc.call(pivot, array[i]) > 0
-        array[barrier_idx + 1], array[i] = array[i], array[barrier_idx + 1]
+        array[barrier_idx], array[i] = array[i], array[barrier_idx]
         barrier_idx += 1
       end
       i += 1
@@ -31,12 +35,6 @@ class QuickSort
 
     array[start], array[barrier_idx] = array[barrier_idx], array[start]
 
-    barrier_idx
+    barrier_idx - 1
   end
 end
-
-# pick pivot
-# check next num
-# if num is less than pivot, swap with number to right of barrier index and increase barrier index by one
-# if num is greater than pivot, do not increase barrier index
-# after cycle is finished, swap pivot with first number to left of pivot
